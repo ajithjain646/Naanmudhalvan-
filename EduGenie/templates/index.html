@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduGenie – AI-Powered Learning Assistant</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="header-container">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                        </svg>
+                    </div>
+                    <div class="brand-text">
+                        <h1 class="brand-title">EduGenie</h1>
+                        <p class="brand-subtitle">Your AI-Powered Learning Assistant</p>
+                    </div>
+                </div>
+                <div class="header-status">
+                    <span class="status-badge" id="api-status-badge">
+                        <span class="status-dot"></span>
+                        <span id="api-status-text">FastAPI Engine Ready</span>
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <div class="container">
+                
+                <!-- Task Selector Navigation Tabs -->
+                <nav class="task-nav" aria-label="Learning Tools">
+                    <button class="nav-tab active" data-task="qa">
+                        <span class="tab-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        </span>
+                        <span>Ask Question</span>
+                    </button>
+                    <button class="nav-tab" data-task="explain">
+                        <span class="tab-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        </span>
+                        <span>Explain Concept</span>
+                        <span class="tab-pill">Local Model</span>
+                    </button>
+                    <button class="nav-tab" data-task="quiz">
+                        <span class="tab-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                        </span>
+                        <span>Generate Quiz</span>
+                        <span class="tab-pill">3 MCQs</span>
+                    </button>
+                    <button class="nav-tab" data-task="summarize">
+                        <span class="tab-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="15" y1="18" x2="3" y2="18"/></svg>
+                        </span>
+                        <span>Summarize</span>
+                    </button>
+                    <button class="nav-tab" data-task="learn">
+                        <span class="tab-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </span>
+                        <span>Learning Path</span>
+                    </button>
+                </nav>
+
+                <!-- Task Form & Input Card -->
+                <div class="card input-card">
+                    <!-- Dropdown selector matching original project specification -->
+                    <div class="task-selector-row">
+                        <label for="task-select" class="selector-label">Select Learning Task:</label>
+                        <select id="task-select" class="task-dropdown">
+                            <option value="qa" selected>1. Ask Question (AI Q&A)</option>
+                            <option value="explain">2. Explain Concept (LaMini-Flan-T5 Local Model)</option>
+                            <option value="quiz">3. Generate Quiz (3 MCQs with Answers)</option>
+                            <option value="summarize">4. Summarize (Educational Text)</option>
+                            <option value="learn">5. Learning Path (Personalized Roadmap)</option>
+                        </select>
+                    </div>
+
+                    <div class="task-meta">
+                        <h2 id="task-heading" class="task-title">Ask an Educational Question</h2>
+                        <p id="task-instruction" class="task-description">
+                            Get concise, accurate, and student-friendly answers for any academic query or doubt.
+                        </p>
+                    </div>
+
+                    <!-- Quick Sample Chips for Ease of Testing -->
+                    <div class="samples-wrapper">
+                        <span class="samples-label">Try example:</span>
+                        <div class="samples-list" id="samples-container">
+                            <!-- Populated dynamically based on task -->
+                        </div>
+                    </div>
+
+                    <!-- Input Form -->
+                    <form id="edugenie-form" onsubmit="return false;">
+                        <div class="input-wrapper">
+                            <textarea 
+                                id="user-input" 
+                                class="styled-textarea" 
+                                rows="4" 
+                                placeholder="Enter your question here (e.g. 'What is the largest ocean?')" 
+                                required
+                            ></textarea>
+                            <div class="input-actions">
+                                <span class="char-count" id="char-count">0 characters</span>
+                                <button type="button" class="btn-clear" id="btn-clear" title="Clear input">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" id="btn-submit" class="btn-primary">
+                                <span class="btn-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                </span>
+                                <span id="btn-submit-text">Ask EduGenie</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Alert / Error Notification Box -->
+                <div id="error-banner" class="alert alert-error hidden" role="alert">
+                    <div class="alert-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </div>
+                    <div class="alert-content">
+                        <h4 class="alert-title">Notice</h4>
+                        <p id="error-message" class="alert-text">Something went wrong.</p>
+                    </div>
+                    <button type="button" class="alert-close" id="btn-close-error" aria-label="Close error">&times;</button>
+                </div>
+
+                <!-- Loading State Indicator -->
+                <div id="loading-spinner" class="loading-state hidden">
+                    <div class="spinner-ring"></div>
+                    <p class="loading-title" id="loading-title">EduGenie is thinking...</p>
+                    <p class="loading-subtitle" id="loading-subtitle">Processing your educational query with AI</p>
+                </div>
+
+                <!-- Result Container -->
+                <div id="result-container" class="result-area hidden">
+                    <!-- Dynamic result cards rendered by script.js -->
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="container footer-content">
+                <p>&copy; EduGenie – AI-Powered Learning Assistant. Built with FastAPI, Jinja2, Google Gemini &amp; Local Model.</p>
+                <div class="footer-links">
+                    <a href="/docs" target="_blank" rel="noopener">Interactive API Docs (Swagger)</a>
+                    <span class="sep">&bull;</span>
+                    <a href="/redoc" target="_blank" rel="noopener">ReDoc</a>
+                    <span class="sep">&bull;</span>
+                    <a href="/health" target="_blank" rel="noopener">Health Check</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Application Script -->
+    <script src="/static/script.js"></script>
+</body>
+</html>
